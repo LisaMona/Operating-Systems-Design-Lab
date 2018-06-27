@@ -1,0 +1,25 @@
+WAP to show that variables are copied from parent to child but not vice versa.
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+int i = 5;
+void main(){
+pid_t p = fork();
+if (p == -1) {
+perror("fork");
+}
+else if ( p == 0 ) {
+printf("\n\nThis portion of code is only executed by CHILD process. \n");
+printf("i = %d\n", i);
+printf("\nNow changing the value of i..");
+i = 10;
+printf("\ni = %d\n", i);
+}
+else {
+wait(0);
+printf("\n\nThis portion of code is only executed by PARENT process.\n");
+printf("i = %d\n", i);
+printf("Since change in value of i isn\'t reflected in parent. \n Variables are not shared");
+}
+}
