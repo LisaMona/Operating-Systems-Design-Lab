@@ -1,0 +1,85 @@
+#include<stdio.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<sys/wait.h>
+#include<stdlib.h>
+void main()
+{
+	int n, d, i, j;
+	printf("enter the degree\n");
+	scanf("%d", &n);
+	printf("enter the depth\n");
+	scanf("%d", &d);
+	pid_t p;
+
+	if(d==1 && n==0)
+		printf("only root\n %d",getpid());
+	else
+	{
+		for(i=0;i<n;i++)
+		{
+			p=fork();
+			{
+				if(p==0)
+				{
+					printf("(parent) %d \t (child) %d\n",getppid(),getpid());
+					if(++j<d)
+					{
+						i=-1;
+						continue;
+					}
+					//break;
+				}
+				break;
+				 if(p>0)
+					waitpid(p,0,0);
+				else
+				{				
+					perror("fork");
+					exit(1);
+				}
+			}
+		}
+	}
+}
+
+
+
+
+
+
+/*
+	pid_t pid;
+	p=fork();
+	if(p>0)
+		{	printf("i am parent %d\n", getpid());	waitpid(p,0,0);
+			//for(j=1;j<=n;j++)
+			//{p=fork();
+			//printf("my id=%d & my parent's id=%d\n",getpid(), getppid());}	
+		}
+	//else if(p==0){
+	for(i=0;i<d;i++)
+	{
+		waitpid(p,0,0);
+		//for(j=0;j<n;j++)
+		//{
+			if(p==-1)
+			{
+				perror("fork unsuccessful\n");
+				//break;
+			}
+			else if(p==0)
+			{
+				for(j=1;j<=n;j++)
+				{
+					p=fork();
+					printf("my id=%d & my parent's id=%d\n",getpid(), getppid());
+					//waitpid(p,0,0);
+					return;
+				}
+
+				
+			}//waitpid(p,0,0);
+		//}
+	}*/	//}
+	
