@@ -1,0 +1,66 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+	int pages[20]={7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1};
+	int n=20;
+	int frames=3;
+	int arr[frames];
+	memset(arr,-1,sizeof arr);
+	int index=0;
+	map<int,int> available;
+	map<int,int> intime;
+	int page_faults=0;
+	
+	for(int i=0;i<n;i++)
+	{
+		if(available[pages[i]])
+		{
+			intime[pages[i]]=i+1;
+			continue;
+		};
+		
+		if(arr[index]==-1)
+		{
+			page_faults++;
+			arr[index]=pages[i];
+			index=(index+1)%frames;
+			available[pages[i]]=1;
+			intime[pages[i]]=i+1;
+		}
+		else
+		{
+			page_faults++;
+			int mintime=INT_MAX;
+			int ind=-1;
+			
+			for(int k=0;k<frames;k++)
+			{
+				if(mintime>intime[arr[k]])
+				{
+					mintime=intime[arr[k]];
+					ind=k;
+				}
+			}
+			
+			if(ind==-1)
+				continue;
+			
+			available[arr[ind]]=0;
+			arr[ind]=pages[i];
+			index=(ind+1)%frames;
+			intime[pages[i]]=i+1;
+			available[pages[i]]=1;
+		}
+
+		cout<<"For pagefault "<<page_faults<<endl;
+
+		for(int j=0;j<frames;j++)
+			cout<<arr[j]<<" "<<endl;
+
+		cout<<endl;
+	}
+
+	cout<<page_faults<<endl;
+}
