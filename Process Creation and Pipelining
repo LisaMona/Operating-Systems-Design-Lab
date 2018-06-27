@@ -1,0 +1,24 @@
+WAP to create process chain like P1 –-> P2 –-> ... –-> Pn.
+
+Here, ---> defines parent-child relationship.
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+void main(){
+int no, i;
+i = 0;
+printf("Enter value of no: ");
+scanf("%d", &no);
+int p = fork();
+if (p > 0) {
+printf("\nFor ROOT Process: PID%d ---> PID%d \n", getpid(), p );
+}
+while (i < no-1) {
+p = fork();
+if (p > 0) {
+printf("\nFor Child Process: PID%d ---> PID%d \n", getpid(), p );
+}
+i++;
+}
+}
