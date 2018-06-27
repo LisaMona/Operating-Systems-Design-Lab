@@ -1,0 +1,53 @@
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{
+	int arr[5]={0,4,8,10,5};
+	int burst[5]={20,16,12,10,23};
+	int count=0;
+	int gantt[10];
+	int n=5;
+	int prev=INT_MAX,prev_count;
+	int totaltime=0;
+	for(int i=0;i<n;i++)
+		totaltime+=burst[i];
+	while(count<totaltime)
+	{
+		int btmin=INT_MAX;
+		int index=-1;
+		
+		for(int i=0;i<n;i++)
+		{
+			if(arr[i]>count || burst[i]==INT_MAX)
+				continue;
+			if(arr[i]<=count && burst[i]<btmin)
+			{
+				index=i;
+				btmin=burst[i];
+			}
+		}
+		count++;
+		if(prev!=index && prev!=INT_MAX)
+			cout<<"P"<<prev<<" | "<<prev_count<<" | ";
+		burst[index]--;
+		if(burst[index]==0)
+		{
+			burst[index]=INT_MAX;
+			gantt[index]=count-arr[index]-burst[index];
+		}
+		prev=index;
+		prev_count=count;
+	}
+	cout<<"P"<<prev<<" | "<<prev_count<<" | ";
+	cout<<endl;
+	int totalwait=0;
+	
+	for(int i=0;i<n;i++)
+	{
+		cout<<i<<" "<<gantt[i]<<endl;
+		totalwait+=gantt[i];
+	}
+	double awt=double(totalwait)/double(n);
+	cout<<endl<<"Average waiting Time= "<<awt;
+	cout<<endl;
+}
