@@ -1,0 +1,30 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<fcntl.h>
+#include<sys/types.h>
+#include<unistd.h>
+
+#define FIFO_NAME "oneway.txt"
+
+int main()
+{
+	char s[300];
+	int num,fd;
+	mkfifo(FIFO_NAME,0666);
+	gets(s);
+	while(strcmp(s,"DONE")!=0)
+	{
+		printf("Waiting for reader...\n");
+		fd=open(FIFO_NAME,O_WRONLY);
+		printf("Got a reader - Start writing:\n");
+		gets(s);
+		if((num=write(fd,s,strlen(s))) == -1)
+			perror("WRITE");
+		else
+			printf("Writer wrote %d bytes.\n",num);
+	}
+	close(fd);
+}
