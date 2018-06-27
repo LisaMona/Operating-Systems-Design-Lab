@@ -1,0 +1,65 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define n 3
+int arrival[3]={0,2,3};							//arrival time
+int burst[3]={5,4,2};							//burst time
+int main()
+{
+	int time=0;
+	double tw=0;
+	int wait[n],burst1[n],cnt=0;
+	int prev=INT_MIN,prev_exec=0;  
+	int total_burst=0;
+	int burst_diff,tot_rem=0;
+	float avg_rem;   
+	int min_i,last_i=-1; 
+	for(int i=0;i<n;i++) { 
+		total_burst+=burst[i];  				//calculation of total time
+		burst1[i]=burst[i];					
+	}
+	cout<<"\nGantt\n";
+	while(time<total_burst){					
+		cnt=0;tot_rem=0;
+		for(int i=0;i<n;i++) {
+			if(arrival[i]<=time && burst[i]!=INT_MIN) 
+				{tot_rem+=burst[i]; cnt++ ;}		//total remaining time
+
+		}
+		avg_rem=tot_rem/cnt;
+		for(int j=0;j<n;j++){
+			burst_diff=INT_MAX;   
+			min_i=-1;  
+			for(int i=0;i<n;i++){     
+				if(arrival[i]<=time && abs(burst[i]-avg_rem)<burst_diff){     //burst time closest to average remaining time
+					min_i=i;     
+					burst_diff=abs(burst[i]-avg_rem);       
+				}
+			}   
+		}
+
+		if(burst[min_i]==burst[last_i]){
+			min_i=last_i;
+			burst_diff=abs(burst[last_i]-avg_rem);
+		}
+		time++;							
+		if(prev!=min_i && prev!=INT_MAX && prev_exec!=0)    			//checks for preemtion
+			cout<<"P"<<prev<<" | "<<prev_exec<<" | "; 			//if same process continues don't print again
+		burst[min_i]--; 
+		last_i=min_i;  
+		if(burst[min_i]==0){    
+			burst[min_i]=INT_MAX;    
+			wait[min_i]=time-arrival[min_i]-burst1[min_i];  		//wait time
+		}   
+		prev=min_i;   
+		prev_exec=time;  
+	}
+	cout<<"P"<<prev<<" | "<<prev_exec<<" | ";
+	cout<<endl;
+	
+	for(int i=0;i<n;i++){
+		tw+=wait[i];								// total waiting time
+		cout<<i<<" "<<wait[i]<<endl;
+	}
+	float avg_wait = tw/n;
+	cout<<"\n Average waiting time is "<<avg_wait<<"\n\n";				//calculation of average waiting time
+}
