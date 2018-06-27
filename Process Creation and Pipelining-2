@@ -1,0 +1,30 @@
+WAP to show that unlike other variables of parent process, a pipe created by parent is not copied to its child, rather its shared.
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+int main(void) {
+int fd[2], nobyte;
+char string[] = "This string is shared.\n";
+char buffer[50];
+pid_t p;
+pipe(fd);
+if((p = fork()) == -1) {
+perror("fork");
+exit(1);
+}
+if(p == 0) {
+printf("Writing into pipe from child process...”);
+close(fd[0]);
+write(fd[1], string, (strlen(string)+1));
+exit(0);
+}
+else {
+printf("\nReading pipe from Parent Process...”);
+close(fd[1]);
+nobyte = read(fd[0], buffer, sizeof(buffer));
+printf("\nString read from pipe: %s", buffer);
+}
+return(0);
+}
+3) WAP to crea
