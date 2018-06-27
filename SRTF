@@ -1,53 +1,59 @@
 #include<bits/stdc++.h>
+#define n 5
+
 using namespace std;
+
 int main()
 {
-	int arr[5]={0,4,8,10,5};
-	int burst[5]={20,16,12,10,23};
-	int count=0;
-	int gantt[10];
-	int n=5;
-	int prev=INT_MAX,prev_count;
-	int totaltime=0;
-	for(int i=0;i<n;i++)
-		totaltime+=burst[i];
-	while(count<totaltime)
-	{
-		int btmin=INT_MAX;
-		int index=-1;
-		
-		for(int i=0;i<n;i++)
-		{
-			if(arr[i]>count || burst[i]==INT_MAX)
-				continue;
-			if(arr[i]<=count && burst[i]<btmin)
-			{
-				index=i;
-				btmin=burst[i];
-			}
-		}
-		count++;
-		if(prev!=index && prev!=INT_MAX)
-			cout<<"P"<<prev<<" | "<<prev_count<<" | ";
-		burst[index]--;
-		if(burst[index]==0)
-		{
-			burst[index]=INT_MAX;
-			gantt[index]=count-arr[index]-burst[index];
-		}
-		prev=index;
-		prev_count=count;
-	}
-	cout<<"P"<<prev<<" | "<<prev_count<<" | ";
-	cout<<endl;
-	int totalwait=0;
+	int i,j,k,min,prev=INT_MAX;
+	int exec=0,prev_exec=0,tw=0,total=0;
+	int arrival[5] = {0,2,4,6,8};		//arrival times
+	int burst[5] = {16,8,12,2,4};		//burst times
+	int part[5] = {16,8,12,2,4};
+	int wait[5];
 	
-	for(int i=0;i<n;i++)
+	for(i=0;i<n;i++)
+		total+=burst[i];		//total burst time calculation
+	
+	cout<<"\nGantt Chart:\n  0";
+	
+	while(exec<total)
 	{
-		cout<<i<<" "<<gantt[i]<<endl;
-		totalwait+=gantt[i];
+		for(j=0;j<n;j++)
+		{
+			min=INT_MAX;
+			k=-1;
+			for(i=0;i<n;i++)
+				if(arrival[i]<=exec && burst[i]<min)		//minimum remaining burst time check
+				{
+					k=i;
+					min=burst[i];
+				}
+		}
+		exec++;
+		if(prev!=k && prev!=INT_MAX)			//premption check
+			cout<<"\tP"<<prev<<"\t"<<prev_exec;
+		burst[k]--;
+		if(burst[k]==0)
+		{
+			burst[k]=INT_MAX;
+			wait[k]=exec-arrival[k]-part[k];		//waiting time calculation at end(after premptions)
+		}
+		prev=k;
+		prev_exec=exec;
 	}
-	double awt=double(totalwait)/double(n);
-	cout<<endl<<"Average waiting Time= "<<awt;
+	
+	cout<<"\tP"<<prev<<"\t"<<prev_exec;
 	cout<<endl;
+
+	for(i=0;i<n;i++)
+	{
+		tw=tw+wait[i];			//total waiting time
+		cout<<"\n Waiting time of Process "<<i+1<<" is "<<wait[i]<<endl;
+	}
+	
+	float avg=(float)tw/n;			//average waiting time
+	cout<<"\n Average waiting time is "<<avg<<"\n\n";
+
+	return 0;
 }
