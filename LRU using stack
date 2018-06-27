@@ -1,0 +1,72 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+	int pages[20]={1,2,3,2,4,1,3,2,4,1};
+	int n=10;
+	list<int> li;
+	int frames=3;
+	int arr[frames];
+	memset(arr,-1,sizeof arr);
+	int index=0;
+	map<int,int> available;
+	map<int,int> intime;
+	int page_faults=0;
+	cout<<"Stack Content: "<<endl;
+
+	for(int i=0;i<n;i++)
+	{
+		if(available[pages[i]])
+		{
+			list<int>::iterator it;
+			
+			for(it=li.begin();it!=li.end();it++)
+				if(*it==pages[i])
+					break;
+			
+			li.erase(it);
+			li.push_front(pages[i]);
+			continue;
+		}
+		
+		if(arr[index]==-1)
+		{
+			page_faults++;
+			arr[index]=pages[i];
+			li.push_front(pages[i]);
+			index=(index+1)%frames;
+			available[pages[i]]=1;
+		}
+		else
+		{
+			page_faults++;
+			int mintime=INT_MAX;
+			int last=li.back();
+			
+			if(!li.empty())
+				li.pop_back();
+
+			int k=-1;
+			for(k=0;k<frames;k++)
+				if(arr[k]==last)
+					break;
+
+			li.push_front(pages[i]);
+			available[arr[k]]=0;
+			arr[k]=pages[i];
+			index=(k+1)%frames;
+			available[pages[i]]=1;
+		}
+
+		cout<<endl<<"For pagefault "<<page_faults<<": ";
+		list<int>::iterator it;
+
+		for(it=li.begin();it!=li.end();it++)
+			cout<<*it<<" ";
+
+		cout<<", ";
+	}
+
+	cout<<endl<<"Total Page faults :"<<page_faults<<endl;
+}
