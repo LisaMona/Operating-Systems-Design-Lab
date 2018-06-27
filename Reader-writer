@@ -1,0 +1,87 @@
+#include<pthread.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<semaphore.h>
+#include<sys/wait.h>
+#define size 5
+
+sem_t wsem, rsem, mutex1, mutex2, mutex3;
+int rd_count=0, wr_count=0;
+void *read_f(void *ptr)						//reader function
+{
+	int p = (int)ptr;
+
+	sem_wait(&mutex3);					//wait operation on mutex
+	sem_wait(&rsem);
+	sem_wait(&mutex1);
+	rd_count++;
+	if(rd_count==1)
+		sem_wait(&wsem);
+	sem_post(&mutex1);					//signal operation on mutex
+	sem_post(&rsem);
+	sem_post(&mutex3);
+
+	printf("\nReader %d reading.\n",p+1);
+	//sleep(1);
+	printf("\nReader %d over.\n",p+1);
+	sem_wait(&mutex1);
+	rd_count--;
+	if(rd_count==0)
+		sem_post(&wsem);
+	sem_post(&mutex1);
+}
+void *write_f(void *ptr)					//writer function
+{
+	int p=(int)ptr;
+	sem_wait(&mutex2);					//wait operation on mutex
+	wr_count++;
+	if(wr_count==1)
+		sem_wait(&rsem);
+	sem_post(&mutex2);					//signal operation on mutex
+	sem_wait(&wsem);
+	printf("\nWriter %d writing\n",p+1);
+	//sleep(1);
+	printf("\nWriter %d over.\n",p+1);
+	sem_post(&wsem);
+	sem_wait(&mutex2);
+	wr_count--;
+	if(wr_count==0)
+		sem_post(&rsem);
+	sem_post(&mutex2);		
+}
+int main()
+{
+	int i,rc;
+	sem_init (&mutex1,0,1);
+	sem_init (&mutex2,0,1);
+	sem_init (&mutex3,0,1);
+	sem_init (&rsem,0,1);
+	sem_init (&wsem,0,1);
+	pthread_t read[size];
+	pthread_t write[size];
+	for(i=0;i<size;i++)
+	{
+		printf("\nwriter %d is created\n",i+1);		
+		rc=pthread_create(&write[i],NULL,write_f,(void *)i);			//writer created
+		if(rc)
+		{
+			perror("Failed.\n");
+			exit(-1);
+		}
+	}
+	for(i=0;i<size;i++)
+	{
+		printf("\nreader %d is created\n",i+1);
+		rc=pthread_create(&read[i],NULL,read_f,(void *)i);			//reader created
+		if(rc)
+		{
+			perror("unsuccessful\n");
+			exit(-1);
+		}
+	}
+	for(i=0;i<size;i++)								//joining threads
+		pthread_join(write[i],NULL);
+
+	for(i=0;i<size;i++)
+		pthread_join(read[i],NULL);	
+}
