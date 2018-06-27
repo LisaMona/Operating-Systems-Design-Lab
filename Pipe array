@@ -1,0 +1,57 @@
+#include<stdio.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<stdlib.h>
+
+int main()
+{
+	int fd[2],num;	
+	int ar[5]={0};
+	int i=0;
+	int x=10;
+	int y;
+	
+	pipe(fd);	
+	if(pipe(fd)==-1)
+	{	
+		perror("pipe unsuccessful\n");
+		exit(1);
+	}
+	
+	else
+	{
+		ar[i]=x;
+		write(fd[1],&x,sizeof(int));
+		close(fd[1]);
+		pid_t p;
+		if(p==-1)
+		{
+			perror("fork unsuccessful\n");
+			exit(1);
+		}		
+		for(i=1;i<5;i++)
+		{	
+			
+			if(p==0)
+			{
+				pid_t p;
+				p=fork();
+			
+				int y;
+				//close(fd[1]);
+				read(fd[0],&y,sizeof(int));
+				printf("%d\n",y);				
+				x++;
+				ar[i]=x;
+				write(fd[1],&x,sizeof(int));
+				//printf("child with id %d\n", getpid());
+			}
+			else
+			{
+				waitpid(p,0,0);
+				close(fd[0]);
+			}
+		}
+	}
+}
