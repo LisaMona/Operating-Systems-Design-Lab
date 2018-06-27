@@ -1,0 +1,55 @@
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#define filename "/tmp/myfile"
+int main()
+{
+	char s[300];
+	int num,fd;
+	mkfifo(filename,0777);
+	//pid_t p=fork();
+	while(1)
+	{
+		printf("waiting for reader:");
+		fd=open(filename,O_WRONLY);
+		//if(p>0)
+		{
+			printf("write a msg for child\n");
+			gets(s);
+			num=write(fd,s,strlen(s));
+			close(fd);
+		//}
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
