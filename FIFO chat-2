@@ -1,0 +1,54 @@
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<errno.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#define filename "/tmp/myfile"
+int main()
+{
+	char s[300];
+	int num,fd;
+	mkfifo(filename,0777);
+	fd=open(filename,O_WRONLY);
+	//pid_t p=fork();
+	while(1)
+	{
+		//memset(s,NULL,300);
+		if((num=read(fd,s,300))==-1)
+			perror("read");
+		else
+		{
+			s[num]='\0';
+			printf("reading the msg %s\n",s);
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
